@@ -1,0 +1,12 @@
+{
+    "parent": "block/orientable",
+    "textures": {
+        "particle": "blocks/planks_spruce",
+        "up": "blocks/planks_spruce",
+        "down": "blocks/planks_spruce",
+        "north": "blocks/planks_spruce",
+        "east": "blocks/planks_spruce",
+        "south": "blocks/planks_spruce",
+        "west": "blocks/planks_spruce"
+    }
+}
