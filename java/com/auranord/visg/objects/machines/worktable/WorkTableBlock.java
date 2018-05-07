@@ -61,6 +61,7 @@ public class WorkTableBlock extends BlockBase implements ITileEntityProvider,IHa
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) 
 	{
+		//##############################################################################
 		if(!worldIn.isRemote)
 		{
 			playerIn.openGui(Main.instance, Reference.GUI_WORK_TABLE, worldIn, pos.getX(), pos.getY(), pos.getZ());
@@ -166,5 +167,17 @@ public class WorkTableBlock extends BlockBase implements ITileEntityProvider,IHa
 	{
 		return ((EnumFacing)state.getValue(FACING)).getIndex();
 	}	
+	
+	@Override
+	public boolean isOpaqueCube(IBlockState state)
+	{
+		return false;
+	}
+	
+	@Override
+	public boolean isFullCube(IBlockState state) 
+	{
+		return false;
+	}
 	
 }

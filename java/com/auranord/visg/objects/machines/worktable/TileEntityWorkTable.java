@@ -27,9 +27,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 
+//##############################################################################
 public class TileEntityWorkTable extends TileEntity implements IInventory, ITickable
 {
-	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
+	// Slot 0 Input
+	// Slot 1 Output
+	private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
 	private String customName;
 	
 	private int burnTime;
@@ -105,29 +108,34 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 		if(index == 0 && index + 1 == 1 && !flag)
 		{
 			ItemStack stack1 = (ItemStack)this.inventory.get(index + 1);
-			this.totalCookTime = this.getCookTime(stack, stack1);
+			this.totalCookTime = this.getWorkTime(stack, stack1);
 			this.cookTime = 0;
 			this.markDirty();
 		}
 	}
 	
+	//##############################################################################
 	@Override
 	public void readFromNBT(NBTTagCompound compound)
 	{
+		/*
 		super.readFromNBT(compound);
 		this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
 		ItemStackHelper.loadAllItems(compound, this.inventory);
 		this.burnTime = compound.getInteger("BurnTime");
 		this.cookTime = compound.getInteger("CookTime");
 		this.totalCookTime = compound.getInteger("CookTimeTotal");
-		this.currentBurnTime = getItemBurnTime((ItemStack)this.inventory.get(2));
+		//this.currentBurnTime = getItemBurnTime((ItemStack)this.inventory.get(2));
 		
 		if(compound.hasKey("CustomName", 8)) this.setCustomName(compound.getString("CustomName"));
+		 */
 	}
 	
+	//##############################################################################
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) 
 	{
+		/*
 		super.writeToNBT(compound);
 		compound.setInteger("BurnTime", (short)this.burnTime);
 		compound.setInteger("CookTime", (short)this.cookTime);
@@ -135,13 +143,14 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 		ItemStackHelper.saveAllItems(compound, this.inventory);
 		
 		if(this.hasCustomName()) compound.setString("CustomName", this.customName);
+		*/
 		return compound;
 	}
 
 	@Override
 	public int getInventoryStackLimit() 
 	{
-		return 64;
+		return 1;
 	}
 	
 	public boolean isBurning() 
@@ -155,8 +164,10 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 		return inventory.getField(0) > 0;
 	}
 	
+	//##############################################################################
 	public void update() 
 	{
+		/*
 		boolean flag = this.isBurning();
 		boolean flag1 = false;
 		
@@ -168,9 +179,9 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 			
 			if(this.isBurning() || !stack.isEmpty() && !((((ItemStack)this.inventory.get(0)).isEmpty()) || ((ItemStack)this.inventory.get(1)).isEmpty())) 
 			{
-				if(!this.isBurning() && this.canSmelt()) 
+				if(!this.isBurning() && this.canWork()) 
 				{
-					this.burnTime = getItemBurnTime(stack);
+					//this.burnTime = getItemBurnTime(stack);
 					this.currentBurnTime = this.burnTime;
 					
 					if(this.isBurning()) 
@@ -190,15 +201,15 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 						}
 					}
 				} 
-				if(this.isBurning() && this.canSmelt()) 
+				if(this.isBurning() && this.canWork()) 
 				{
 					++this.cookTime;
 					
 					if(this.cookTime == this.totalCookTime) 
 					{
 						this.cookTime = 0;
-						this.totalCookTime = this.getCookTime((ItemStack)this.inventory.get(0), (ItemStack)this.inventory.get(1));
-						this.smeltItem();
+						this.totalCookTime = this.getWorkTime((ItemStack)this.inventory.get(0), (ItemStack)this.inventory.get(1));
+						this.workItem();
 						flag1 = true;
 					}
 				} 
@@ -215,48 +226,52 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 			}
 		} 
 		if(flag1) this.markDirty();
+		*/
 	}
 	
-	public int getCookTime(ItemStack input1, ItemStack input2) 
+	
+	public int getWorkTime(ItemStack input1, ItemStack input2) 
 	{
 		return 200;
 	}
 	
-	private boolean canSmelt() 
+	private boolean canWork() 
 	{
-		if(((ItemStack)this.inventory.get(0)).isEmpty() || ((ItemStack)this.inventory.get(1)).isEmpty()) return false;
+		if( ((ItemStack)this.inventory.get(0)).isEmpty()) return false;
 		else 
 		{
-			ItemStack result = WorkTableRecipes.getInstance().getSinteringResult((ItemStack)this.inventory.get(0), (ItemStack)this.inventory.get(1));	
+			ItemStack result = WorkTableRecipes.getInstance().getWorkingResult((ItemStack)this.inventory.get(0));	
 			if(result.isEmpty()) return false;
 			else
 			{
-				ItemStack output = (ItemStack)this.inventory.get(3);
+				ItemStack output = (ItemStack)this.inventory.get(1);
 				if(output.isEmpty()) return true;
 				if(!output.isItemEqual(result)) return false;
 				int res = output.getCount() + result.getCount();
 				return res <= getInventoryStackLimit() && res <= output.getMaxStackSize();
 			}
 		}
+		
 	}
 	
-	public void smeltItem() 
+	
+	public void workItem() 
 	{
-		if(this.canSmelt()) 
+		if(this.canWork()) 
 		{
-			ItemStack input1 = (ItemStack)this.inventory.get(0);
-			ItemStack input2 = (ItemStack)this.inventory.get(1);
-			ItemStack result = WorkTableRecipes.getInstance().getSinteringResult(input1, input2);
-			ItemStack output = (ItemStack)this.inventory.get(3);
+			ItemStack input = (ItemStack)this.inventory.get(0);
+			ItemStack result = WorkTableRecipes.getInstance().getWorkingResult(input);
+			ItemStack output = (ItemStack)this.inventory.get(1);
 			
-			if(output.isEmpty()) this.inventory.set(3, result.copy());
+			if(output.isEmpty()) this.inventory.set(1, result.copy());
 			else if(output.getItem() == result.getItem()) output.grow(result.getCount());
 			
-			input1.shrink(1);
-			input2.shrink(1);
+			input.shrink(1);
 		}
 	}
 	
+	//##############################################################################
+	/*
 	public static int getItemBurnTime(ItemStack fuel) 
 	{
 		if(fuel.isEmpty()) return 0;
@@ -290,6 +305,7 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 	{
 		return getItemBurnTime(fuel) > 0;
 	}
+	*/
 	
 	@Override
 	public boolean isUsableByPlayer(EntityPlayer player) 
@@ -307,19 +323,17 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 	public boolean isItemValidForSlot(int index, ItemStack stack) 
 	{
 		
-		if(index == 3) return false;
-		else if(index != 2) return true;
-		else 
-		{
-			return isItemFuel(stack);
-		}
+		if(index == 1) return false;
+		else if(index == 0) return true;
+		else return false;
 	}
 	
 	public String getGuiID() 
 	{
-		return "tm:sintering_furnace";
+		return "visg:work_table";
 	}
 
+	//##############################################################################
 	@Override
 	public int getField(int id) 
 	{
@@ -338,6 +352,7 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 		}
 	}
 
+	//##############################################################################
 	@Override
 	public void setField(int id, int value) 
 	{
@@ -357,6 +372,7 @@ public class TileEntityWorkTable extends TileEntity implements IInventory, ITick
 		}
 	}
 
+	//##############################################################################
 	@Override
 	public int getFieldCount() 
 	{

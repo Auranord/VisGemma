@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiWorkTable extends GuiContainer
 {
-	private static final ResourceLocation TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/gui/sintering_furnace.png");
+	private static final ResourceLocation TEXTURES = new ResourceLocation(Reference.MOD_ID + ":textures/gui/work_table.png");
 	private final InventoryPlayer player;
 	private final TileEntityWorkTable tileentity;
 	
@@ -34,12 +34,14 @@ public class GuiWorkTable extends GuiContainer
 		GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
 		this.mc.getTextureManager().bindTexture(TEXTURES);
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-		
+
+		/*
 		if(TileEntityWorkTable.isBurning(tileentity))
 		{
 			int k = this.getBurnLeftScaled(13);
 			this.drawTexturedModalRect(this.guiLeft + 8, this.guiTop + 54 + 12 - k, 176, 12 - k, 14, k + 1);
 		}
+		*/
 		
 		int l = this.getCookProgressScaled(24);
 		this.drawTexturedModalRect(this.guiLeft + 44, this.guiTop + 36, 176, 14, l + 1, 16);

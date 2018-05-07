@@ -1,8 +1,8 @@
 package com.auranord.visg.objects.machines.worktable;
 
 
-import com.auranord.visg.objects.machines.worktable.slots.SlotSinteringFurnaceFuel;
-import com.auranord.visg.objects.machines.worktable.slots.SlotSinteringFurnaceOutput;
+import com.auranord.visg.objects.machines.worktable.slots.SlotWorkTableInput;
+import com.auranord.visg.objects.machines.worktable.slots.SlotWorkTableOutput;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -22,10 +22,11 @@ public class ContainerWorkTable extends Container
 	{
 		this.tileentity = tileentity;
 		
-		this.addSlotToContainer(new Slot(tileentity, 0, 26, 11));
-		this.addSlotToContainer(new Slot(tileentity, 1, 26, 59));
-		this.addSlotToContainer(new SlotSinteringFurnaceFuel(tileentity, 2, 7, 35));
-		this.addSlotToContainer(new SlotSinteringFurnaceOutput(player.player, tileentity, 3, 81, 36));
+		//this.addSlotToContainer(new Slot(tileentity, 0, 26, 11));
+		//this.addSlotToContainer(new Slot(tileentity, 1, 26, 59));
+		
+		this.addSlotToContainer(new SlotWorkTableInput(tileentity, 0, 7, 35));
+		this.addSlotToContainer(new SlotWorkTableOutput(player.player, tileentity, 1, 81, 36));
 		
 		for(int y = 0; y < 3; y++)
 		{
@@ -34,6 +35,7 @@ public class ContainerWorkTable extends Container
 				this.addSlotToContainer(new Slot(player, x + y*9 + 9, 8 + x*18, 84 + y*18));
 			}
 		}
+		
 		
 		for(int x = 0; x < 9; x++)
 		{
@@ -48,6 +50,7 @@ public class ContainerWorkTable extends Container
 		listener.sendAllWindowProperties(this, this.tileentity);
 	}
 	
+	//##############################################################################
 	@Override
 	public void detectAndSendChanges() 
 	{
@@ -82,6 +85,8 @@ public class ContainerWorkTable extends Container
 		return this.tileentity.isUsableByPlayer(playerIn);
 	}
 	
+	//##############################################################################
+	/*
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) 
 	{
@@ -148,4 +153,5 @@ public class ContainerWorkTable extends Container
 		}
 		return stack;
 	}
+	*/
 }

@@ -15,7 +15,8 @@ import net.minecraft.item.ItemStack;
 public class WorkTableRecipes 
 {	
 	private static final WorkTableRecipes INSTANCE = new WorkTableRecipes();
-	private final Table<ItemStack, ItemStack, ItemStack> smeltingList = HashBasedTable.<ItemStack, ItemStack, ItemStack>create();
+	//private final Table<ItemStack, ItemStack, ItemStack> workingList = HashBasedTable.<ItemStack, ItemStack, ItemStack>create();
+	private final Map<ItemStack, ItemStack> workingList = Maps.<ItemStack, ItemStack>newHashMap();
 	private final Map<ItemStack, Float> experienceList = Maps.<ItemStack, Float>newHashMap();
 	
 	public static WorkTableRecipes getInstance()
@@ -28,23 +29,37 @@ public class WorkTableRecipes
 		//addSinteringRecipe(new ItemStack(BlockInit.BLOCK_COPPER), new ItemStack(BlockInit.ORE_OVERWORLD), new ItemStack(Blocks.ACACIA_FENCE), 5.0F);
 		//addSinteringRecipe(new ItemStack(Blocks.ACACIA_FENCE), new ItemStack(Blocks.ACACIA_FENCE_GATE), new ItemStack(BlockInit.SINTERING_FURNACE), 5.0F);
 		
-		addSinteringRecipe(new ItemStack(Item.getByNameOrId("minecraft:iron_ingot")), new ItemStack(Item.getByNameOrId("minecraft:gold_ingot")), new ItemStack(Item.getByNameOrId("minecraft:diamond")), 5.0F);
+		addWorkingRecipe(new ItemStack(Item.getByNameOrId("minecraft:iron_ingot")), new ItemStack(Item.getByNameOrId("minecraft:diamond")), 5.0F);
 	}
 
 	
-	public void addSinteringRecipe(ItemStack input1, ItemStack input2, ItemStack result, float experience) 
+	
+	public void addWorkingRecipe(ItemStack input, ItemStack result, float experience) 
 	{
-		if(getSinteringResult(input1, input2) != ItemStack.EMPTY) return;
-		this.smeltingList.put(input1, input2, result);
+		if(getWorkingResult(input) != ItemStack.EMPTY) return;
+		this.workingList.put(input, result);
 		this.experienceList.put(result, Float.valueOf(experience));
 	}
 	
-	public ItemStack getSinteringResult(ItemStack input1, ItemStack input2) 
+	public ItemStack getWorkingResult(ItemStack input) 
 	{
-		for(Entry<ItemStack, Map<ItemStack, ItemStack>> entry : this.smeltingList.columnMap().entrySet()) 
+		ItemStack result = ItemStack.EMPTY;
+		
+		for(int i = 0; i < workingList.size(); i++)
 		{
-			if(this.compareItemStacks(input1, (ItemStack)entry.getKey())) 
+			result = workingList.get(input);
+			if(this.compareItemStacks(result,ItemStack.EMPTY))
+				return result;
+		}
+
+		return ItemStack.EMPTY;	
+		
+		/*
+		for(Entry<ItemStack, Map<ItemStack, ItemStack>> entry : this.workingList.columnMap().entrySet()) 
+		{
+			if(this.compareItemStacks(input, (ItemStack)entry.getKey())) 
 			{
+				
 				for(Entry<ItemStack, ItemStack> ent : entry.getValue().entrySet()) 
 				{
 					if(this.compareItemStacks(input2, (ItemStack)ent.getKey())) 
@@ -55,6 +70,7 @@ public class WorkTableRecipes
 			}
 		}
 		return ItemStack.EMPTY;
+		*/
 	}
 	
 	private boolean compareItemStacks(ItemStack stack1, ItemStack stack2)
@@ -62,10 +78,12 @@ public class WorkTableRecipes
 		return stack2.getItem() == stack1.getItem() && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
 	}
 	
+	/*
 	public Table<ItemStack, ItemStack, ItemStack> getDualSmeltingList() 
 	{
-		return this.smeltingList;
+		return this.workingList;
 	}
+	*/
 	
 	public float getSinteringExperience(ItemStack stack)
 	{
